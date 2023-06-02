@@ -35,7 +35,7 @@ Mandatory arguments:
 --gtf                     GTF file for gene annotation.
 
 Optional arguments:
---OutputDir               Output directory. Defaults to "results".
+--outputDir               Output directory. Defaults to "results".
 --pQtlEqtlHyrcoloc        Run iterative colocalisation. Defaults to true.
 --ManhattanPlots          Make Manhattan plots. Defaults to false.
 """.stripIndent()
@@ -131,7 +131,7 @@ workflow {
 
         PQTL_COMPARISON(pqtl_ch)
         if (params.pQtlEqtlHyrcoloc) {
-        PQTL_COMPARISON.out.coloc_output_ch.flatten().collectFile(name: 'PqtlEqtlColocResults.txt', keepHeader: true, sort: true, storeDir: "${params.OutputDir}")
+        PQTL_COMPARISON.out.coloc_output_ch.flatten().collectFile(name: 'PqtlEqtlColocResults.txt', keepHeader: true, sort: true, storeDir: "${params.outputDir}")
         }
 
 }
