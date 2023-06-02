@@ -49,7 +49,7 @@ process IterativeColoc {
 
 process Manhattan {
     
-    publishDir "${params.outputDir}/ManhattanPlots/", mode: 'copy', overwrite: true
+    publishDir "${params.outdir}/ManhattanPlots/", mode: 'copy', overwrite: true
 
     input:
         tuple val(id), val(ensembl), path(gtf), path(harmonised_data)

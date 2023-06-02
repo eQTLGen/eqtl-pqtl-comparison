@@ -35,7 +35,7 @@ Mandatory arguments:
 --gtf                     GTF file for gene annotation.
 
 Optional arguments:
---outputDir               Output directory. Defaults to "results".
+--outdir               Output directory. Defaults to "results".
 --pQtlEqtlHyrcoloc        Run iterative colocalisation. Defaults to true.
 --ManhattanPlots          Make Manhattan plots. Defaults to false.
 """.stripIndent()
@@ -48,7 +48,7 @@ if (params.help){
 }
 
 // Default parameters
-params.outputDir = 'results'
+params.outdir = 'results'
 
 params.inclusion_step_output = 'NO_FILE'
 
@@ -69,7 +69,7 @@ summary['Script dir']                               = workflow.projectDir
 summary['Config Profile']                           = workflow.profile
 summary['Container Engine']                         = workflow.containerEngine
 if(workflow.containerEngine) summary['Container']   = workflow.container
-summary['Output directory']                         = params.OutputDir
+summary['Output directory']                         = params.outdir
 summary['eQTL results']                             = params.eqtl_files
 summary['pQTL files']                               = params.pqtl_files
 summary['Genes']                                    = params.genes
@@ -131,7 +131,7 @@ workflow {
 
         PQTL_COMPARISON(pqtl_ch)
         if (params.pQtlEqtlHyrcoloc) {
-        PQTL_COMPARISON.out.coloc_output_ch.flatten().collectFile(name: 'PqtlEqtlColocResults.txt', keepHeader: true, sort: true, storeDir: "${params.outputDir}")
+        PQTL_COMPARISON.out.coloc_output_ch.flatten().collectFile(name: 'PqtlEqtlColocResults.txt', keepHeader: true, sort: true, storeDir: "${params.outdir}")
         }
 
 }
