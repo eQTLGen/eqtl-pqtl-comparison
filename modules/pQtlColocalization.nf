@@ -1,7 +1,7 @@
 #!/bin/bash nextflow
 
 process HarmoniseSumstats {
-    scratch true
+    //scratch true
     input:
         tuple val(id), val(ensembl), path(pqtl), path(eqtl_folder), path(allele_info_file), path(gtf)
 

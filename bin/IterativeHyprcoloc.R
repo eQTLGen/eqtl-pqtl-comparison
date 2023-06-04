@@ -52,6 +52,8 @@ other_all_col = "nea",
 beta_col = "beta",
 se_col = "se")
 
+if (nrow(pqtl_lead) > 0){
+
 for (i in 1:nrow(pqtl_lead)){
 pqtl_reg <- pqtl[chr == pqtl_lead$chr[i] & pos > pqtl_lead$pos[i] - 1000000 & pos < pqtl_lead$pos[i] + 1000000]
 eqtl_reg <- eqtl[SnpId %in% pqtl_reg$SnpId]
@@ -81,7 +83,7 @@ message(paste0("Analysed locus ", i, "/", nrow(pqtl_lead)))
 
 res <- rbind(res, res_temp)
 }
-
+} 
 #######################
 # Analyse eQTL regions#
 #######################
@@ -96,6 +98,8 @@ other_all_col = "nea",
 beta_col = "beta",
 se_col = "se")
 
+if (nrow(eqtl_lead) > 0){
+
 for (i in 1:nrow(eqtl_lead)){
 pqtl_reg <- pqtl[chr == eqtl_lead$chr[i] & pos > eqtl_lead$pos[i] - 1000000 & pos < eqtl_lead$pos[i] + 1000000]
 eqtl_reg <- eqtl[SnpId %in% pqtl_reg$SnpId]
@@ -108,7 +112,7 @@ res_temp$nr_snps_included <- nrow(pqtl_reg)
 
 res_temp$analysis = "eQTL-pQTL"
 res_temp$lead_variant <- eqtl_lead$SNP[i]
-res_temp$region <- paste0(pqtl_lead$chr[i], ":", pqtl_lead$pos[i] - 1000000, "-", pqtl_lead$pos[i] + 1000000)
+res_temp$region <- paste0(eqtl_lead$chr[i], ":", eqtl_lead$pos[i] - 1000000, "-", eqtl_lead$pos[i] + 1000000)
 
 res_temp$dataset1_effect = eqtl_lead$beta[i]
 res_temp$dataset2_effect = pqtl_reg[pqtl_reg$SnpId == eqtl_lead$SNP[i], ]$beta
@@ -124,8 +128,7 @@ message(paste0("Analysed locus ", i, "/", nrow(eqtl_lead)))
 
 res <- rbind(res, res_temp)
 }
-
+}
 res <- data.table(gene = args$gene_id, protein = args$protein_id, res)
 
 fwrite(res, paste0(args$protein_id, "__", args$gene_id, ".txt"), sep = "\t")
-

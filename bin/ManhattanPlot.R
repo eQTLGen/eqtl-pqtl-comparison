@@ -31,7 +31,7 @@ png(paste0(args$protein_id, "__", args$gene_id, "_Manhattan.png"),
 height = 7, width = 8, res = 400, units = "in", 
 type = "cairo")
 
-par(mfrow = c(2, 1), mar = c(1, 4, 1, 4))
+par(mfrow = c(2, 1), mar = c(4, 4, 4, 4))
 
 ManhPlot(eqtl,
         InputChrCol = "chr",
@@ -39,9 +39,9 @@ ManhPlot(eqtl,
         InputPvalCol = "P",
         InputRsCol = "SnpId",
         build = "hg38",
-        title = paste("pQTL:", args$protein_id),
+        title = paste("eQTL:", args$gene_id), 
         AnnotateClosestGenes = TRUE,
-        colors = c("palegreen1", "palegreen3"),
+        colors = c("steelblue1", "steelblue3"),
         gtf = args$gtf)
 
 ManhPlot(pqtl,
@@ -50,9 +50,9 @@ ManhPlot(pqtl,
         InputPvalCol = "P",
         InputRsCol = "SnpId",
         build = "hg38",
-        title = paste("eQTL:", args$gene_id),
+        title = paste("pQTL:", args$protein_id),
         AnnotateClosestGenes = TRUE,
-        colors = c("steelblue1", "steelblue3"),
+        colors = c("palegreen1", "palegreen3"),
         gtf = args$gtf)
 
 dev.off()
