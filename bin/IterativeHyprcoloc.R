@@ -7,7 +7,7 @@ library(IGUtilityPackage)
 
 parser <- ArgumentParser(description = 'Run HyprColoc for every locus to detect colocalisation between pQTL and eQTL datasets.')
 parser$add_argument('--harmonised_data', metavar = 'file', type = 'character',
-                    help = 'R data file which contains list with harmonised sumstats matrices')
+                    help = 'R data file which contains list with harmonised sumstats matrices.')
 parser$add_argument('--gene_id', type = 'character',
                     help = 'Gene name for which the colocalisation is done.')
 parser$add_argument('--protein_id', type = 'character',

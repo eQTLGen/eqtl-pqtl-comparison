@@ -21,6 +21,8 @@ harmonise_sumstats_fast <- function(data1, data2,
                                     data2_beta = "BETA",
                                     data1_se = "SE",
                                     data2_se = "SE",
+                                    data1_n = "N",
+                                    data2_n = "N",
                                     showProgress = TRUE){
   data1 <- data.table(
     chr = data1[[data1_chr]],
@@ -29,6 +31,7 @@ harmonise_sumstats_fast <- function(data1, data2,
     nea = data1[[data1_nea]],
     beta = data1[[data1_beta]],
     se = data1[[data1_se]],
+    n = data1[[data1_n]],
     key = c("chr", "pos")
   )
 
@@ -39,6 +42,7 @@ harmonise_sumstats_fast <- function(data1, data2,
     nea = data2[[data2_nea]],
     beta = data2[[data2_beta]],
     se = data2[[data2_se]],
+    n = data2[[data2_n]],
     key = c("chr", "pos")
   )
 
@@ -87,16 +91,11 @@ harmonise_sumstats_fast <- function(data1, data2,
   batches <- split(dataset2_variants, rep(1:num_batches, each = batch_size, length.out = length(dataset2_variants)))
 
   # Filter the data.table using each batch
-  i <- 0
   data1 <- rbindlist(lapply(batches, function(batch){data1[SNPID1 %in% batch]}))
-
-  print(head(data1))
-
   if(isTRUE(showProgress)){message("Dataset 1 filtered!")}
 
   num_batches <- ceiling(length(dataset1_variants) / batch_size)
   batches <- split(dataset1_variants, rep(1:num_batches, each = batch_size, length.out = length(dataset1_variants)))
-  i <- 0
   data2 <- rbindlist(lapply(batches, function(batch){data2[SNPID1 %in% batch]}))
   if(isTRUE(showProgress)){message("Dataset 2 filtered!")}
 
@@ -112,8 +111,8 @@ harmonise_sumstats_fast <- function(data1, data2,
   data1[data1$SNPID1 == data2$SNPID2]$SnpId <- data2[data1$SNPID1 == data2$SNPID2]$SnpId
 
   if(isTRUE(showProgress)){message("Alleles and effect sizes harmonised!")}
-  data1 <- data1[, c(10, 1:6), with = FALSE]
-  data2 <- data2[, c(10, 1:6), with = FALSE]
+  data1 <- data1[, c(11, 1:7), with = FALSE]
+  data2 <- data2[, c(11, 1:7), with = FALSE]
   if(isTRUE(showProgress)){message("Finished!")}
   if(isTRUE(showProgress)){return(list(sumstats1 = data1, sumstats2 = data2))}
 
@@ -196,6 +195,8 @@ data2_nea = "ALLELE0",
 data1_beta = "beta",
 data2_beta = "BETA",
 data1_se = "standard_error",
-data2_se = "SE")
+data2_se = "SE",
+data1_n = "sample_size",
+data2_n = "N")
 
 saveRDS(harmonised_data, file = paste0(args$protein_id, "__", args$gene_id, ".rds"))

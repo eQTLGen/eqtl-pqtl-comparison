@@ -3,10 +3,10 @@
 process HarmoniseSumstats {
     //scratch true
     input:
-        tuple val(id), val(ensembl), path(pqtl), path(eqtl_folder), path(allele_info_file), path(gtf)
+        tuple val(id), val(ensembl), path(pqtl), path(eqtl_folder), path(allele_info_file), path(gtf), path(hapmap3_ld_scores), path(chain)
 
     output:
-        tuple val(id), val(ensembl), path(gtf), path("*.rds")
+        tuple val(id), val(ensembl), path(gtf), path("*.rds"), path(hapmap3_ld_scores), path(chain)
 
     shell:
         '''
@@ -33,7 +33,7 @@ process HarmoniseSumstats {
 
 process IterativeColoc {
     input:
-        tuple val(id), val(ensembl), path(gtf), path(harmonised_data)
+        tuple val(id), val(ensembl), path(gtf), path(harmonised_data), path(hapmap3_ld_scores), path(chain)
 
     output:
         path "*.txt"
@@ -52,10 +52,10 @@ process Manhattan {
     publishDir "${params.outdir}/ManhattanPlots/", mode: 'copy', overwrite: true
 
     input:
-        tuple val(id), val(ensembl), path(gtf), path(harmonised_data)
+        tuple val(id), val(ensembl), path(gtf), path(harmonised_data), path(hapmap3_ld_scores), path(chain)
 
     output:
-        path "*.png"
+        path "*.pdf", emit: manhattan_output_ch
 
     script:
         """
@@ -67,16 +67,67 @@ process Manhattan {
         """
 }
 
-workflow PQTL_COMPARISON {
+
+process GeneticCorrelation {
+    
+    input:
+        tuple val(id), val(ensembl), path(gtf), path(harmonised_data), path(hapmap3_ld_scores), path(chain)
+
+    output:
+        path "*.txt", emit: ldsc_output_ch
+
+    script:
+        """
+        GeneticCorrelation.R \
+        --harmonised_data ${harmonised_data} \
+        --gene_id ${ensembl} \
+        --protein_id ${id} \
+        --hapmap3_ld_scores ${hapmap3_ld_scores} \
+        --chain ${chain}
+        """
+}
+
+workflow HARMONISE {
     take:
-        pqtl_ch
+        data
 
     main:
-        harmonised_sumstats_ch = HarmoniseSumstats(pqtl_ch)
-        if (params.pQtlEqtlHyrcoloc) {coloc_output_ch = IterativeColoc(harmonised_sumstats_ch)}
-        if (params.ManhattanPlots) {manhattan_output_ch = Manhattan(harmonised_sumstats_ch)}
+        harmonised_sumstats_ch = HarmoniseSumstats(data)
+        
+    emit:
+        harmonised_sumstats_ch
+
+}
+
+workflow COLOC {
+    take:
+        data
+
+    main:
+        coloc_output_ch = IterativeColoc(data)
 
     emit:
         coloc_output_ch
+}
+
+workflow MANHATTAN {
+    take:
+        data
+
+    main:
+       manhattan_output_ch = Manhattan(data)
+
+    emit:
         manhattan_output_ch
+}
+
+workflow LDSC {
+    take:
+        data
+
+    main:
+       ldsc_output_ch = GeneticCorrelation(data)
+
+    emit:
+        ldsc_output_ch
 }
