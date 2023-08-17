@@ -10,9 +10,9 @@ def helpmessage() {
 
 log.info"""
 
-HyprColocForEqtlCatalog v${workflow.manifest.version}"
+pQTLeQTLComparison v${workflow.manifest.version}"
 ===========================================================
-Pipeline for running HyprColoc colocalisation analyses (https://www.nature.com/articles/s41467-020-20885-8) between GWAS locus and eQTL Catalogue datasets (https://www.ebi.ac.uk/eqtl/).
+Pipeline for running HyprColoc colocalisation analyses (https://www.nature.com/articles/s41467-020-20885-8) pQTL and eQTLGen eQTL datasets.
 
 Usage:
 
