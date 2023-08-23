@@ -12,7 +12,7 @@ log.info"""
 
 pQTLeQTLComparison v${workflow.manifest.version}"
 ===========================================================
-Pipeline for running HyprColoc colocalisation analyses (https://www.nature.com/articles/s41467-020-20885-8) pQTL and eQTLGen eQTL datasets.
+Pipeline for running HyprColoc colocalisation analyses (https://www.nature.com/articles/s41467-020-20885-8) between pQTL and eQTLGen eQTL datasets.
 
 Usage:
 
