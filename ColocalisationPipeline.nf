@@ -60,7 +60,7 @@ params.ManhattanPlots = false
 
 //Show parameter values
 log.info """=======================================================
-Colocalisation pipeline v${workflow.manifest.version}"
+pQTLeQTLComparison v${workflow.manifest.version}"
 ======================================================="""
 def summary = [:]
 summary['Pipeline Version']                         = workflow.manifest.version
