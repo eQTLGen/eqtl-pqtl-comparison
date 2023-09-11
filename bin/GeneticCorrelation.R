@@ -13,9 +13,9 @@ parser <- ArgumentParser(description = 'Run LDSC genetic correlation between two
 parser$add_argument('--harmonised_data', metavar = 'file', type = 'character',
                     help = 'R data file which contains list with harmonised sumstats matrices.')
 parser$add_argument('--gene_id', type = 'character',
-                    help = 'Gene name for which the colocalisation is done.')
+                    help = 'Gene name for which the LDSC is done.')
 parser$add_argument('--protein_id', type = 'character',
-                    help = 'Protein ID for which the colocalisation is done.')
+                    help = 'Protein ID for which the LDSC is done.')
 parser$add_argument('--hapmap3_ld_scores', type = 'character',
                     help = 'Folder with HapMap3 LD-scores.')
 parser$add_argument('--chain', type = 'character',
@@ -223,6 +223,8 @@ ldscore <- data.table(SNP = gr2$SNP,
 ldscore <- ldscore[order(Chr, Pos)]
 ldscore <- ldscore[!duplicated(SNP), ]
 
+message("LD scores lifted")
+
 comb1 <- harmonise_sumstats_fast(data1 = eqtl,
                                 data2 = ldscore,
                                 data1_chr = "Chr", data2_chr = "Chr",
@@ -231,6 +233,9 @@ comb1 <- harmonise_sumstats_fast(data1 = eqtl,
                                 data1_nea = "A2", data2_nea = "A2",
                                 data1_beta = "BETA", data2_ldscore = "ldscore",
                                 data1_se = "SE", data1_n = "N")
+
+message("1. harmonisation done")
+
 comb2 <- harmonise_sumstats_fast(data1 = pqtl,
                                  data2 = ldscore,
                                  data1_chr = "Chr", data2_chr = "Chr",
@@ -239,6 +244,8 @@ comb2 <- harmonise_sumstats_fast(data1 = pqtl,
                                  data1_nea = "A2", data2_nea = "A2",
                                  data1_beta = "BETA", data2_ldscore = "ldscore",
                                  data1_se = "SE", data1_n = "N")
+
+message("2. harmonisation done")
 
 ldscore <- data.table(SNP = comb1$sumstats2$SnpId,
 Chr  = comb1$sumstats2$chr,
@@ -270,6 +277,8 @@ pqtl <- data.table(SNP = comb2$sumstats1$SnpId,
 gen_cor <- LDreg(sumstat = list(eqtl, pqtl),
               ldscore =  ldscore)
 
+message("Genetic correlation for all loci done.")
+
 h2_1_2 <- gen_cor[3,1]
 se_h2_1_2 <- gen_cor[3,2]
 
@@ -298,12 +307,15 @@ print(head(eqtl))
 
 eqtl2 <- RemoveSigEffects(eqtl, snp_id_col = "SNP", snp_chr_col = "Chr", snp_pos_col = "Pos", beta_col = "BETA", se_col = "SE", n_col = "N", snp_a1_col = "A1", snp_a2_col = "A2")
 pqtl2 <- RemoveSigEffects(pqtl, snp_id_col = "SNP", snp_chr_col = "Chr", snp_pos_col = "Pos", beta_col = "BETA", se_col = "SE", n_col = "N", snp_a1_col = "A1", snp_a2_col = "A2")
+message("Removal of singificant loci completed.")
+
 
 eqtl2 <- eqtl2[SNP %in% pqtl$SNP]
 pqtl2 <- pqtl2[SNP %in% eqtl$SNP]
 
 gen_cor <- LDreg(sumstat = list(eqtl2[, c(1:8), with = FALSE], pqtl2[, c(1:8), with = FALSE]),
                  ldscore =  ldscore)
+message("Genetic correlation for non-sig loci done.")
 
 h2_1_2 <- gen_cor[3,1]
 se_h2_1_2 <- gen_cor[3,2]
@@ -331,3 +343,4 @@ res2 <- data.table(gene = args$gene_id, protein = args$protein_id, trait1_h2 = g
 res <- rbind(res1, res2)
 
 fwrite(res, paste0(args$gene_id, "_", args$protein_id, ".txt"), sep = "\t", quote = FALSE)
+message("Analysis finished!")

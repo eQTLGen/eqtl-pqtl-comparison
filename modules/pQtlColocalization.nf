@@ -1,6 +1,8 @@
 #!/bin/bash nextflow
 
 process HarmoniseSumstats {
+
+    container = 'quay.io/urmovosa/pqtlvseqtl:v0.2'
     //scratch true
     input:
         tuple val(id), val(ensembl), path(pqtl), path(eqtl_folder), path(allele_info_file), path(gtf), path(hapmap3_ld_scores), path(chain)
@@ -32,6 +34,8 @@ process HarmoniseSumstats {
 }
 
 process IterativeColoc {
+
+    container = 'quay.io/urmovosa/pqtlvseqtl:v0.2'
     input:
         tuple val(id), val(ensembl), path(gtf), path(harmonised_data), path(hapmap3_ld_scores), path(chain)
 
@@ -49,13 +53,14 @@ process IterativeColoc {
 
 process Manhattan {
     
+    container = 'quay.io/urmovosa/pqtlvseqtl:v0.2'
     publishDir "${params.outdir}/ManhattanPlots/", mode: 'copy', overwrite: true
 
     input:
         tuple val(id), val(ensembl), path(gtf), path(harmonised_data), path(hapmap3_ld_scores), path(chain)
 
     output:
-        path "*.pdf", emit: manhattan_output_ch
+        path "*.png", emit: manhattan_output_ch
 
     script:
         """
@@ -69,6 +74,8 @@ process Manhattan {
 
 
 process GeneticCorrelation {
+
+    container = 'quay.io/urmovosa/pqtlvseqtl:v0.2'
     
     input:
         tuple val(id), val(ensembl), path(gtf), path(harmonised_data), path(hapmap3_ld_scores), path(chain)
@@ -86,6 +93,24 @@ process GeneticCorrelation {
         --chain ${chain}
         """
 }
+
+process GenomeWideMR {
+    
+    input:
+        tuple val(id), val(ensembl), path(gtf), path(harmonised_data), path(hapmap3_ld_scores), path(chain)
+
+    output:
+        path "*.txt", emit: gwmr_output_ch
+
+    script:
+        """
+        GenomeWideTwoSampleMr.R \
+        --harmonised_data ${harmonised_data} \
+        --gene_id ${ensembl} \
+        --protein_id ${id}
+        """
+}
+
 
 workflow HARMONISE {
     take:
@@ -130,4 +155,15 @@ workflow LDSC {
 
     emit:
         ldsc_output_ch
+}
+
+workflow GWMR {
+    take:
+        data
+
+    main:
+       gwmr_output_ch = GenomeWideMR(data)
+
+    emit:
+        gwmr_output_ch
 }

@@ -23,7 +23,7 @@ nextflow run RunHyprColocOnGWAS.nf --eqtl_files \
 --pqtl_meta_table \
 --gtf  \
 --gtf \
---OutputDir
+--outdir
 
 Mandatory arguments:
 --eqtl_files                eQTLGen parquet dataset.
@@ -41,6 +41,7 @@ Optional arguments:
 --pQtlEqtlHyrcoloc          Run iterative colocalisation. Defaults to true.
 --ManhattanPlots            Make Manhattan plots. Defaults to false.
 --GeneticCorrelation        Run genetic correlation. Defaults to false.
+--GwMR                      Run genome-wide Mendelian Randomisation. Defaults to false.
 """.stripIndent()
 
 }
@@ -57,6 +58,8 @@ params.inclusion_step_output = 'NO_FILE'
 
 params.pQtlEqtlHyrcoloc = true
 params.ManhattanPlots = false
+params.GeneticCorrelation = false
+params.GwMR = false
 
 //Show parameter values
 log.info """=======================================================
@@ -84,9 +87,10 @@ summary['LiftOver chain file']                      = params.chain
 summary['Run hypcoloc']                             = params.pQtlEqtlHyrcoloc
 summary['Make Manhattan plots']                     = params.ManhattanPlots
 summary['Run genetic correlation']                  = params.GeneticCorrelation
+summary['Run genome-wide MR']                       = params.GwMR
 
 // import modules
-include { COLOC; MANHATTAN; HARMONISE; LDSC; IterativeColoc; HarmoniseSumstats; GeneticCorrelation } from './modules/pQtlColocalization.nf'
+include { COLOC; MANHATTAN; HARMONISE; LDSC; GWMR; IterativeColoc; HarmoniseSumstats; GeneticCorrelation; GenomeWideMR } from './modules/pQtlColocalization.nf'
 
 log.info summary.collect { k,v -> "${k.padRight(21)}: $v" }.join("\n")
 log.info "======================================================="
@@ -138,7 +142,6 @@ cs_threshold = Channel.value(params.cs_threshold)
 
 workflow {
 
-
         HARMONISE(pqtl_ch)
         if (params.pQtlEqtlHyrcoloc) {
         COLOC(HARMONISE.out)
@@ -150,6 +153,10 @@ workflow {
         if (params.GeneticCorrelation) {
         LDSC(HARMONISE.out)
         LDSC.out.ldsc_output_ch.flatten().collectFile(name: 'PqtlEqtlGenCorResults.txt', keepHeader: true, sort: true, storeDir: "${params.outdir}")
+        }
+        if (params.GwMR) {
+        GWMR(HARMONISE.out)
+        GWMR.out.gwmr_output_ch.flatten().collectFile(name: 'PqtlEqtlGwMrResults.txt', keepHeader: true, sort: true, storeDir: "${params.outdir}")
         }
 
 }

@@ -9,6 +9,10 @@ ENV PATH /opt/conda/envs/pqtlvseqtl/bin:$PATH
 ENV TAR="/bin/tar"
 RUN ln -s /bin/tar /bin/gtar
 COPY temp/hyprcoloc-master.zip /
-COPY temp/IGUtilityPackage_0.2.96.tar.gz /
+COPY temp/SumTool-master.zip /
+COPY temp/TwoSampleMR-master.zip /
+COPY temp/IGUtilityPackage_0.2.98.tar.gz /
 RUN R -e "remotes::install_local('hyprcoloc-master.zip')"
-RUN R -e "install.packages('IGUtilityPackage_0.2.96.tar.gz', repos = NULL, type = 'source', dependencies = TRUE)"
+RUN R -e "remotes::install_local('SumTool-master.zip')"
+RUN R -e "remotes::install_local('TwoSampleMR-master.zip', dependencies = TRUE)"
+RUN R -e "install.packages('IGUtilityPackage_0.2.98.tar.gz', repos = NULL, type = 'source', dependencies = TRUE)"

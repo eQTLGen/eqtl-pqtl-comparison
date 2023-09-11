@@ -58,8 +58,8 @@ pqtl$P <- ZtoP(pqtl$beta/pqtl$se)
 # dev.off()
 
 
-pdf(paste0(args$protein_id, "__", args$gene_id, "_Manhattan.pdf"), 
-height = 7, width = 8)
+png(paste0(args$protein_id, "__", args$gene_id, "_Manhattan.png"), 
+height = 7, width = 8, units = "in", res = 400, type = "cairo")
 
 par(mfrow = c(2, 1), mar = c(4, 4, 4, 4))
 
