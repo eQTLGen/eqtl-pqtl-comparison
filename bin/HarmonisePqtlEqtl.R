@@ -181,6 +181,7 @@ print(head(eqtls))
 print(head(pqtls))
 
 # Harmonise datasets
+message("Harmonising...")
 harmonised_data <- harmonise_sumstats_fast(eqtls, 
 pqtls, 
 data1_chr = "chromosome",
@@ -197,5 +198,8 @@ data1_se = "standard_error",
 data2_se = "SE",
 data1_n = "sample_size",
 data2_n = "N")
+message("Harmonising...done!")
 
+message("Writing output...")
 saveRDS(harmonised_data, file = paste0(args$protein_id, "__", args$gene_id, ".rds"))
+message("Writing output...done!")
