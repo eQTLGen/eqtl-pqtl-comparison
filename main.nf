@@ -60,6 +60,11 @@ params.pQtlEqtlHyrcoloc = true
 params.ManhattanPlots = false
 params.GeneticCorrelation = false
 params.GwMR = false
+params.window = 1000000
+params.p_thresh = 5e-8
+params.maf_thresh = 0.01
+params.posterior_threshold = 0.8
+params.cs_threshold = 0.95
 
 //Show parameter values
 log.info """=======================================================
@@ -88,6 +93,7 @@ summary['Run hypcoloc']                             = params.pQtlEqtlHyrcoloc
 summary['Make Manhattan plots']                     = params.ManhattanPlots
 summary['Run genetic correlation']                  = params.GeneticCorrelation
 summary['Run genome-wide MR']                       = params.GwMR
+summary['Window']                                   = params.window
 
 // import modules
 include { COLOC; MANHATTAN; HARMONISE; LDSC; GWMR; IterativeColoc; HarmoniseSumstats; GeneticCorrelation; GenomeWideMR } from './modules/pQtlColocalization.nf'
