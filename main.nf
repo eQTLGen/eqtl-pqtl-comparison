@@ -16,7 +16,7 @@ Pipeline for running HyprColoc colocalisation analyses (https://www.nature.com/a
 
 Usage:
 
-nextflow run RunHyprColocOnGWAS.nf --eqtl_files \
+nextflow run main.nf --eqtl_files \
 --pqtl_files \
 --allele_info \
 --genes \

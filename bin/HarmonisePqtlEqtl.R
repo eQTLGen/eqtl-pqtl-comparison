@@ -135,7 +135,7 @@ parser$add_argument('--protein_id', type = 'character',
                     help = 'Protein ID for which the colocalisation is done.')
 parser$add_argument('--allele_frequency', type = 'numeric', default = 0.01,
                     help = 'Allele frequency threshold.')
-parser$add_argument('--i2', type = 'numeric', default = 40,
+parser$add_argument('--i2', type = 'numeric', default = 100,
                     help = 'I2 threshold.')
 parser$add_argument('--sample_fraction_overlap', type = 'numeric', default = 0.5,
                     help = 'Fraction of samples each variants needs to be tested in, out of maximum samples.')
@@ -143,14 +143,14 @@ parser$add_argument('--sample_fraction_overlap', type = 'numeric', default = 0.5
 args <- parser$parse_args()
 
 # read in allele data
-alleles <- arrow::open_dataset(args$allele_info) %>% select("ID", "CHR", "bp", "str_allele1", "str_allele2")
+alleles <- arrow::open_dataset(args$allele_info) %>% select("variant_index", "chromosome", "bp", "ref_all", "alt_all")
 message("Allele info read in!")
 nrow(alleles)
 
 # Read in pQTLs
 readpqtl <- function(fn){
     dt_temp <- fread(fn, select = c(3, 1, 2, 4, 5, 10, 11, 8, 6))
-    dt_temp <- dt_temp[A1FREQ > args$allele_frequency & A1FREQ < 100 - args$allele_frequency]
+    dt_temp <- dt_temp[A1FREQ > args$allele_frequency & A1FREQ < 1 - args$allele_frequency]
     keycols <- c("ID")
     setkeyv(dt_temp, keycols)
     return(dt_temp)
@@ -165,7 +165,7 @@ message("pQTLs read in!")
 
 # Read in eQTL data
 ds <- arrow::open_dataset(args$eqtl_folder, partitioning = "phenotype", hive_style = TRUE)
-eqtls <- ds %>% filter((i_squared < args$i2 | is.na(i_squared)) & phenotype %in% !!args$gene_id ) %>% collect() %>% 
+eqtls <- ds %>% filter((i_squared <= args$i2 | is.na(i_squared)) & phenotype %in% !!args$gene_id ) %>% collect() %>% 
 filter(sample_size >= args$sample_fraction_overlap * max(sample_size)) %>% as.data.table()
 message("eQTLs read in!")
 
@@ -174,7 +174,7 @@ message("Allele info filtered!")
 alleles <- alleles %>% collect() %>% as.data.table()
 message("Allele info converted!")
 
-eqtls <- merge(eqtls, alleles, by.x = "variant", by.y = "ID")
+eqtls <- merge(eqtls, alleles, by = "variant_index")
 rm(alleles)
 message("Data merged!")
 
@@ -184,13 +184,13 @@ print(head(pqtls))
 # Harmonise datasets
 harmonised_data <- harmonise_sumstats_fast(eqtls, 
 pqtls, 
-data1_chr = "CHR",
+data1_chr = "chromosome",
 data2_chr = "CHROM",
 data1_bp = "bp",
 data2_bp = "GENPOS",
-data1_ea = "str_allele2",
+data1_ea = "alt_all",
 data2_ea = "ALLELE1",
-data1_nea = "str_allele1",
+data1_nea = "ref_all",
 data2_nea = "ALLELE0",
 data1_beta = "beta",
 data2_beta = "BETA",

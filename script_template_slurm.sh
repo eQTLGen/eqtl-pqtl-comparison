@@ -31,7 +31,7 @@ gtf=[path to annotation gtf]
 
 output_folder=[output folder]
 
-NXF_VER=23.04.1 ${nextflow_path}/nextflow run ColocalisationPipeline.nf \
+NXF_VER=23.04.1 ${nextflow_path}/nextflow run main.nf \
 --outdir ${output_folder} \
 --eqtl_files ${empirical}/eqtls \
 --pqtl_files ${pqtls} \
