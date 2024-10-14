@@ -143,7 +143,7 @@ parser$add_argument('--sample_fraction_overlap', type = 'numeric', default = 0.5
 args <- parser$parse_args()
 
 # read in allele data
-alleles <- arrow::open_dataset(args$allele_info) %>% select("variant_index", "chromosome", "bp", "ref_all", "alt_all")
+alleles <- arrow::open_dataset(args$allele_info) %>% select("variant_index", "chromosome", "bp", "non_eff_allele", "eff_allele")
 message("Allele info read in!")
 nrow(alleles)
 
@@ -169,7 +169,7 @@ eqtls <- ds %>% filter((i_squared <= args$i2 | is.na(i_squared)) & phenotype %in
 filter(sample_size >= args$sample_fraction_overlap * max(sample_size)) %>% as.data.table()
 message("eQTLs read in!")
 
-alleles <- alleles %>% filter(ID %in% !!eqtls$variant) 
+alleles <- alleles %>% filter(variant_index %in% !!eqtls$variant) 
 message("Allele info filtered!")
 alleles <- alleles %>% collect() %>% as.data.table()
 message("Allele info converted!")
@@ -188,9 +188,9 @@ data1_chr = "chromosome",
 data2_chr = "CHROM",
 data1_bp = "bp",
 data2_bp = "GENPOS",
-data1_ea = "alt_all",
+data1_ea = "eff_allele",
 data2_ea = "ALLELE1",
-data1_nea = "ref_all",
+data1_nea = "non_ref_allele",
 data2_nea = "ALLELE0",
 data1_beta = "beta",
 data2_beta = "BETA",
