@@ -2,7 +2,7 @@
 
 process HarmoniseSumstats {
 
-    container = 'quay.io/urmovosa/pqtlvseqtl:v0.2'
+    container = 'quay.io/urmovosa/pqtlvseqtl:v0.1'
     //scratch true
     input:
         tuple val(id), val(ensembl), path(pqtl), path(eqtl_folder), path(allele_info_file), path(gtf), path(hapmap3_ld_scores), path(chain)
@@ -35,7 +35,7 @@ process HarmoniseSumstats {
 
 process IterativeColoc {
 
-    container = 'quay.io/urmovosa/pqtlvseqtl:v0.2'
+    container = 'quay.io/urmovosa/pqtlvseqtl:v0.1'
     input:
         tuple val(id), val(ensembl), path(gtf), path(harmonised_data), path(hapmap3_ld_scores), path(chain)
 
@@ -53,7 +53,7 @@ process IterativeColoc {
 
 process Manhattan {
     
-    container = 'quay.io/urmovosa/pqtlvseqtl:v0.2'
+    container = 'quay.io/urmovosa/pqtlvseqtl:v0.1'
     publishDir "${params.outdir}/ManhattanPlots/", mode: 'copy', overwrite: true
 
     input:
@@ -75,7 +75,7 @@ process Manhattan {
 
 process GeneticCorrelation {
 
-    container = 'quay.io/urmovosa/pqtlvseqtl:v0.2'
+    container = 'quay.io/urmovosa/pqtlvseqtl:v0.1'
     
     input:
         tuple val(id), val(ensembl), path(gtf), path(harmonised_data), path(hapmap3_ld_scores), path(chain)
