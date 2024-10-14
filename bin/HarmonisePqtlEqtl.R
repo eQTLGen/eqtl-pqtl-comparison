@@ -116,7 +116,6 @@ harmonise_sumstats_fast <- function(data1, data2,
   if(isTRUE(showProgress)){message("Finished!")}
   if(isTRUE(showProgress)){return(list(sumstats1 = data1, sumstats2 = data2))}
 
-
 }
 
 
@@ -190,7 +189,7 @@ data1_bp = "bp",
 data2_bp = "GENPOS",
 data1_ea = "eff_allele",
 data2_ea = "ALLELE1",
-data1_nea = "non_ref_allele",
+data1_nea = "non_eff_allele",
 data2_nea = "ALLELE0",
 data1_beta = "beta",
 data2_beta = "BETA",
