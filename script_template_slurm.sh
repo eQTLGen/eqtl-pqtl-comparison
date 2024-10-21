@@ -33,7 +33,7 @@ output_folder=[output folder]
 
 NXF_VER=23.04.1 ${nextflow_path}/nextflow run main.nf \
 --outdir ${output_folder} \
---eqtl_files ${empirical}/eqtls \
+--eqtl_files ${eqtls} \
 --pqtl_files ${pqtls} \
 --allele_info ${allele_info} \
 --pqtl_meta_table ${pqtls_meta} \
