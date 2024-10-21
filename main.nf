@@ -112,7 +112,7 @@ ldref_ch = Channel.fromPath(params.ld_ref)
 chain_ch = Channel.fromPath(params.chain)
 
 // pQTL arguments
-pqtl_files_ch = Channel.fromPath(params.pqtl_files).
+pqtl_files_ch = Channel.fromPath("${params.pqtl_files}/*.tar").
     map { file ->
           def fileSplit = file.name.toString().split('_')
           def assay = fileSplit[0]
